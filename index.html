@@ -10,9 +10,165 @@
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#2563eb" />
   <link rel="icon" href="/favicon.ico" />
+  <style>
+    :root{ --bg:#f9fafb; --text:#111; --muted:#475569; --brand:#2563eb; --card:#fff; --border:#e5e7eb; --radius:14px; --shadow:0 6px 18px rgba(0,0,0,.08); --maxw:1100px; }
+    *{box-sizing:border-box}
+    html,body{margin:0}
+    body{font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); line-height:1.7}
+    a{color:var(--brand); text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{position:sticky; top:0; z-index:10; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    nav{display:flex; align-items:center; justify-content:space-between; gap:16px; max-width:var(--maxw); margin:0 auto; padding:14px 24px}
+    nav a{color:#111; font-weight:600; margin:0 .75rem}
+    main{max-width:var(--maxw); margin:0 auto; padding:28px}
+    section{margin:0 0 28px}
+    h1{font-size:clamp(28px,4.5vw,44px); margin:.2rem 0 .6rem}
+    h2{font-size:clamp(22px,3.3vw,28px); margin:.2rem 0 .4rem}
+    p.lead{color:var(--muted); font-size:1.05rem}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+    .tag{display:inline-block; font-size:.75rem; font-weight:700; letter-spacing:.04em; color:#1f2937; background:#eef2ff; border:1px solid #e0e7ff; padding:6px 10px; border-radius:999px; margin-bottom:8px}
+    ul.check{padding-left:1.2rem; margin:.4rem 0}
+    pre{background:#0f172a; color:#e5e7eb; padding:14px; border-radius:12px; overflow:auto; font-size:.92rem; border:1px solid #0b1222}
+    code{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+    footer{border-top:1px solid var(--border); color:var(--muted); text-align:center; padding:22px 0; margin:20px 0 10px}
+    @media(max-width:900px){.two{grid-template-columns:1fr} nav{flex-wrap:wrap; justify-content:center}}
+  </style>
 </head>
 <body>
-<h1>Manage Kubernetes Easily</h1>
-<p>This is the deployable version for Vercel.</p>
+  <header>
+    <nav>
+      <div><strong>Manage Kubernetes Easily</strong></div>
+      <div>
+        <a href="#cicd">CI/CD</a>
+        <a href="#security">Security</a>
+        <a href="#cost">Cost</a>
+        <a href="#reliability">Reliability</a>
+        <a href="#monitoring">Monitoring</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <section id="hero" class="card">
+      <span class="tag">How‑To + Best Practices</span>
+      <h1>Manage Kubernetes the Modern Way</h1>
+      <p class="lead">Comprehensive Kubernetes management guide — includes CI/CD automation, security hardening, cost optimization, reliability engineering, and observability with actionable code examples.</p>
+    </section>
+    <section id="cicd" class="card">
+      <span class="tag">CI/CD</span>
+      <h2>Best Practices for CI/CD</h2>
+      <ul class="check">
+        <li>Use GitOps tools like Argo CD or Flux for declarative deployments.</li>
+        <li>Automate builds via GitHub Actions, Jenkins, or GitLab CI with SBOM generation and signing.</li>
+        <li>Adopt health checks and auto‑rollbacks to ensure deployment safety.</li>
+        <li>Separate application and environment configuration repositories.</li>
+      </ul>
+      <pre><code># Example GitHub Action Workflow
+name: Build and Push Image
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t ghcr.io/org/app:${{ github.sha }} .
+      - run: echo $CR_PAT | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+      - run: docker push ghcr.io/org/app:${{ github.sha }}
+</code></pre>
+    </section>
+    <section id="security" class="card">
+      <span class="tag">Security</span>
+      <h2>Best Practices for Security</h2>
+      <ul class="check">
+        <li>Apply Pod Security (restricted) and use non‑root containers.</li>
+        <li>Enforce RBAC and limit admin privileges.</li>
+        <li>Use NetworkPolicies for least privilege network access.</li>
+        <li>Continuously scan images using Trivy or OPA Gatekeeper.</li>
+      </ul>
+      <pre><code># Example NetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+  - to:
+    - ipBlock: { cidr: 10.0.0.0/16 }
+</code></pre>
+    </section>
+    <section id="cost" class="card">
+      <span class="tag">Cost</span>
+      <h2>Best Practices for Cost Optimization</h2>
+      <ul class="check">
+        <li>Right‑size pods using Vertical and Horizontal Pod Autoscalers.</li>
+        <li>Use Kubecost/OpenCost to monitor per‑namespace spend.</li>
+        <li>Clean unused resources like PVCs, Jobs, and images regularly.</li>
+        <li>Leverage Cluster Autoscaler and Karpenter for elasticity.</li>
+      </ul>
+      <pre><code># Example HPA
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: webapp-hpa
+spec:
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+</code></pre>
+    </section>
+    <section id="reliability" class="card">
+      <span class="tag">Reliability</span>
+      <h2>Best Practices for Reliability</h2>
+      <ul class="check">
+        <li>Use PodDisruptionBudgets to maintain availability during updates.</li>
+        <li>Distribute workloads across zones using topologySpreadConstraints.</li>
+        <li>Maintain runbooks and auto‑remediation workflows for recurring issues.</li>
+        <li>Perform regular backups using Velero.</li>
+      </ul>
+      <pre><code># Example PodDisruptionBudget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: webapp-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: webapp
+</code></pre>
+    </section>
+    <section id="monitoring" class="card">
+      <span class="tag">Monitoring</span>
+      <h2>Best Practices for Monitoring</h2>
+      <ul class="check">
+        <li>Set up Prometheus, Grafana, and Loki for observability.</li>
+        <li>Define SLOs and alerting rules using burn rate calculations.</li>
+        <li>Maintain good labeling for service, team, severity, and runbook links.</li>
+        <li>Integrate alerts with your on‑call platform for instant escalation.</li>
+      </ul>
+      <pre><code># Example Prometheus Alert
+- alert: HighErrorRate
+  expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+  for: 10m
+  labels:
+    severity: critical
+    service: api
+  annotations:
+    summary: "5xx > 5% for 10m"
+</code></pre>
+    </section>
+  </main>
+  <footer>
+    <p>© <span id="y"></span> Manage Kubernetes Easily — How‑To & Best Practices. Built for DevOps & SRE professionals.</p>
+  </footer>
+  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
 </body>
 </html>
